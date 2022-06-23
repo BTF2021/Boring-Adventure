@@ -13,8 +13,8 @@ import openfl.text.TextFormat;
 
 class Main extends Sprite
 {
-	var gameWidth:Int = 1280;
-	var gameHeight:Int = 720;
+	public static var gameWidth:Int = 1280;
+	public static var gameHeight:Int = 720;
 	var initialState:Class<FlxState> = TitleState;
 	var zoom:Float = -1;
 	var framerate:Int = 60;
