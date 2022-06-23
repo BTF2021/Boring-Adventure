@@ -31,7 +31,8 @@ class PauseSubState extends FlxSubState
         super.create();
 
         bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		bg.alpha = 0;
+        bg.alpha = 0;
+		FlxTween.tween(bg, {alpha: 0.5}, 0.1, {ease: FlxEase.quartInOut});
 		add(bg);
 
         marker = new FlxSprite(500, Main.gameHeight).makeGraphic(290, 150, FlxColor.CYAN);
@@ -73,7 +74,16 @@ class PauseSubState extends FlxSubState
         giveUpText.text = "Iesire";
         giveUpText.screenCenter(X);
         add(giveUpText);
-        
+
+        /*FlxTween.angle(paused, paused.angle, -2, 2, {ease: FlxEase.quartInOut});
+        new FlxTimer().start(2, function(tmr:FlxTimer)
+        {
+            if (paused.angle == -2)
+                FlxTween.angle(paused, paused.angle, 2, 2, {ease: FlxEase.quartInOut});    //planned to animate the "paused" text, but the game throws out a "Null object reference" error
+            else
+                FlxTween.angle(paused, paused.angle, -2, 2, {ease: FlxEase.quartInOut});
+        }, 0);*/
+
         transitioning();
     }
 
@@ -136,7 +146,10 @@ class PauseSubState extends FlxSubState
                 marker.y = giveUp.y - 10;
                 if(touch.justPressed)
                 {
-                    FlxG.switchState(new TitleState());
+                    if (FlxG.save.data.CharSkin == 4) trace("To continue using Funny, press Credits again");
+                    FlxG.save.data.CharSkin = 1;
+                    FlxG.save.flush();
+                    FlxG.switchState(new MainMenuState());
                 }
             }
         }

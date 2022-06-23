@@ -7,18 +7,20 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.system.FlxSound;
+import flixel.animation.FlxAnimation;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
 class TitleState extends FlxState
 {
     var bg:FlxSprite;
+    var bg2:FlxSprite;
     var me:FlxText;
     var title:FlxText;
     var press:FlxText;
-    var best:FlxText;
+    //var best:FlxText;
 
-    public static var gameVer:String = "0.1.1";
+    public static var gameVer:String = "0.1.1 Dev 169 IDK";
     var ver:FlxText;
 
     override public function create()
@@ -30,6 +32,12 @@ class TitleState extends FlxState
         bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.CYAN);
         bg.screenCenter();
         add(bg);
+
+        bg2 = new FlxSprite().loadGraphic(AssetPaths.MenuBg__png, false, FlxG.width, FlxG.height);
+        bg2.alpha = 0;
+        bg2.screenCenter();
+        bg2.x = bg2.x - 50;
+        add(bg2);
 
         me = new FlxText(0, Main.gameHeight - 80);
         me.size = 40;
@@ -52,12 +60,12 @@ class TitleState extends FlxState
         press.screenCenter(X);
         add(press);
 
-        best = new FlxText(0, 400);
-        best.size = 40;
-        best.color = 0xFF000000;
-        best.text = "Record: " + Std.string(FlxG.save.data.BestScr);
-        best.screenCenter(X);
-        add(best);
+        //best = new FlxText(0, 400);
+        //best.size = 40;
+        //best.color = 0xFF000000;
+        //best.text = "Record: " + Std.string(FlxG.save.data.BestScr);
+        //best.screenCenter(X);
+        //add(best);
 
         ver = new FlxText(20, 690);
         ver.size = 20;
@@ -68,7 +76,7 @@ class TitleState extends FlxState
         FlxTween.angle(me, me.angle, -2, 2, {ease: FlxEase.quartInOut});
         FlxTween.angle(title, title.angle, -2, 2, {ease: FlxEase.quartInOut});
         FlxTween.angle(press, press.angle, -2, 2, {ease: FlxEase.quartInOut});
-        FlxTween.angle(best, best.angle, -2, 2, {ease: FlxEase.quartInOut});
+        //FlxTween.angle(best, best.angle, -2, 2, {ease: FlxEase.quartInOut});
 
         new FlxTimer().start(2, function(tmr:FlxTimer)
         {
@@ -91,13 +99,13 @@ class TitleState extends FlxState
             else
                 FlxTween.angle(press, press.angle, -1, 2, {ease: FlxEase.quartInOut});
         }, 0);
-        new FlxTimer().start(2, function(tmr:FlxTimer)
-        {
-            if (best.angle == -1)
-                FlxTween.angle(best, best.angle, 1, 2, {ease: FlxEase.quartInOut});
-            else
-                FlxTween.angle(best, best.angle, -1, 2, {ease: FlxEase.quartInOut});
-        }, 0);
+        //new FlxTimer().start(2, function(tmr:FlxTimer)
+        //{
+        //    if (best.angle == -1)
+        //        FlxTween.angle(best, best.angle, 1, 2, {ease: FlxEase.quartInOut});
+        //    else
+        //        FlxTween.angle(best, best.angle, -1, 2, {ease: FlxEase.quartInOut});
+        //}, 0);
 
     }
     override public function update(elapsed:Float)
@@ -112,7 +120,9 @@ class TitleState extends FlxState
                     me.y = Main.gameHeight - 80; //640;
                     title.y = 40;
                     press.y = 360;
-                    FlxG.switchState(new PlayState());
+                    FlxG.save.flush();
+                    Continue();
+                    //FlxG.switchState(new PlayState());
                 }
                 else if (touch.overlaps(title))
                 {
@@ -121,5 +131,19 @@ class TitleState extends FlxState
                 }
             }
         }
+    }
+    function Continue()
+    {
+        new FlxTimer().start(0.3, function(tmr:FlxTimer)
+        {
+            FlxTween.tween(title, {y: -80}, 0.2, {ease: FlxEase.quartInOut});
+            FlxTween.tween(me, {y: -80}, 0.2, {ease: FlxEase.quartInOut});
+            //FlxTween.tween(best, {y: Main.gameHeight}, 0.15, {ease: FlxEase.quartInOut});
+            FlxTween.tween(ver, {y: Main.gameHeight}, 0.2, {ease: FlxEase.quartInOut});
+            FlxTween.tween(press, {alpha: 0}, 0.2, {ease: FlxEase.quartInOut});
+            FlxTween.tween(bg, {alpha: 0.5}, 0.2, {ease: FlxEase.quartInOut});
+            FlxTween.tween(bg2, {alpha: 0.5}, 0.2, {ease: FlxEase.quartInOut});
+        }, 1);
+        new FlxTimer().start(0.5, function(tmr:FlxTimer) {FlxG.switchState(new MainMenuState());}, 1);
     }
 }
