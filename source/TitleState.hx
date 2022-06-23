@@ -29,7 +29,7 @@ class TitleState extends FlxState
         me.size = 40;
         me.color = 0xFF000000;
         me.y = 660;
-        me.text = 'Ceva creat de Bogdan si Iosif';
+        me.text = 'Ceva creat de BTF si Vulturul_Plesuv'; //Haha, nu mai sti ce a fost inainte
         me.screenCenter(X);
         add(me);
 
