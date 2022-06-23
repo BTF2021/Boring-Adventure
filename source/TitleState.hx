@@ -18,7 +18,7 @@ class TitleState extends FlxState
     var press:FlxText;
     var best:FlxText;
 
-    public static var gameVer:String = "0.1.0";
+    public static var gameVer:String = "0.1.1";
     var ver:FlxText;
 
     override public function create()

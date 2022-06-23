@@ -73,16 +73,7 @@ class PauseSubState extends FlxSubState
         giveUpText.text = "Iesire";
         giveUpText.screenCenter(X);
         add(giveUpText);
-
-        /*FlxTween.angle(paused, paused.angle, -2, 2, {ease: FlxEase.quartInOut});
-        new FlxTimer().start(2, function(tmr:FlxTimer)
-        {
-            if (paused.angle == -2)
-                FlxTween.angle(paused, paused.angle, 2, 2, {ease: FlxEase.quartInOut});    //planned to animate the "paused" text, but the game throws out a "Null object reference" error
-            else
-                FlxTween.angle(paused, paused.angle, -2, 2, {ease: FlxEase.quartInOut});
-        }, 0);*/
-
+        
         transitioning();
     }
 
@@ -106,47 +97,6 @@ class PauseSubState extends FlxSubState
     override public function update(elapsed:Float):Void
     {
         super.update(elapsed);
-        #if !mobile
-        if(FlxG.mouse.overlaps(resume) && canBeClicked) 
-        {
-            marker.x = resume.x - 10;
-            marker.y = resume.y - 10;
-            if(FlxG.mouse.justPressed)
-            {
-                new FlxTimer().start(n, function(tmr:FlxTimer) 
-                {
-                    marker.kill();
-                    FlxTween.tween(paused, {y: -80}, n-0.1, {ease: FlxEase.quartInOut});
-
-                    FlxTween.tween(resume, {y: Main.gameHeight + 130}, n, {ease: FlxEase.quartInOut});
-                    FlxTween.tween(resumeText, {y: Main.gameHeight + 130}, n, {ease: FlxEase.quartInOut});
-                    FlxTween.tween(restart, {y: Main.gameHeight + 130}, n-0.05, {ease: FlxEase.quartInOut});
-                    FlxTween.tween(restartText, {y: Main.gameHeight + 130}, n-0.05, {ease: FlxEase.quartInOut});
-                    FlxTween.tween(giveUp, {y: Main.gameHeight + 130}, n-0.1, {ease: FlxEase.quartInOut});
-                    FlxTween.tween(giveUpText, {y: Main.gameHeight + 130}, n-0.1, {ease: FlxEase.quartInOut});
-
-                    new FlxTimer().start(n, function(tmr:FlxTimer) {close();}, 1);
-                }, 1);
-            }
-        }
-        if(FlxG.mouse.overlaps(restart) && canBeClicked)
-        { 
-            marker.x = restart.x - 10;
-            marker.y = restart.y - 10;
-            if(FlxG.mouse.justPressed) FlxG.switchState(new PlayState());
-        }
-        if(FlxG.mouse.overlaps(giveUp) && canBeClicked)
-        {
-            marker.x = giveUp.x - 10;
-            marker.y = giveUp.y - 10;
-            if(FlxG.mouse.justPressed)
-            {
-                if (FlxG.save.data.sistemThundMay && FlxG.save.data.sistemInvert)FlxG.save.data.sistemInvert = false;     //Why should Inverted mode and Thunder Mayhem be both activated
-                FlxG.save.flush();
-                FlxG.switchState(new MainMenuState());
-            }
-        }
-        #else
         for (touch in FlxG.touches.list)
         {
             if(touch.overlaps(resume) && canBeClicked) 
@@ -186,12 +136,9 @@ class PauseSubState extends FlxSubState
                 marker.y = giveUp.y - 10;
                 if(touch.justPressed)
                 {
-                    if (FlxG.save.data.sistemThundMay && FlxG.save.data.sistemInvert)FlxG.save.data.sistemInvert = false;     //Why should Inverted mode and Thunder Mayhem be both activated
-                    FlxG.save.flush();
                     FlxG.switchState(new TitleState());
                 }
             }
         }
-        #end
     }
 }
