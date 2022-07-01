@@ -131,16 +131,7 @@ class DevSubState extends FlxSubState
         switch (FlxG.save.data.Characters)
         {
             case 1:
-                if (FlxG.save.data.playAtk != 100) atk.color = FlxColor.RED;
-            case 2:
-                if (FlxG.save.data.playAtk != 50) atk.color = FlxColor.RED;
-            case 3:
-                if (FlxG.save.data.playAtk != 50) atk.color = FlxColor.RED;
-            case 4:
-                if (FlxG.save.data.playAtk != 100 && FlxG.save.data.playAtk != 150) atk.color = FlxColor.RED;
-            case 5:
-                if (FlxG.save.data.playAtk != 50) atk.color = FlxColor.RED;
-            
+                if (FlxG.save.data.playAtk != 100) atk.color = FlxColor.RED;      
         }
         atk.screenCenter(X);
         add(atk);
@@ -153,14 +144,6 @@ class DevSubState extends FlxSubState
         {
             case 1:
                 if (FlxG.save.data.playCool != 0.9) atk.color = FlxColor.RED;
-            case 2:
-                if (FlxG.save.data.playCool != 0.4) atk.color = FlxColor.RED;
-            case 3:
-                if (FlxG.save.data.playCool != 0.2) atk.color = FlxColor.RED;
-            case 4:
-                if (FlxG.save.data.playCool != 0.5 && FlxG.save.data.playAtk != 0.2) atk.color = FlxColor.RED;
-            case 5:
-                if (FlxG.save.data.playCool != 0.7) atk.color = FlxColor.RED;
         }
         cooldwn.screenCenter(X);
         add(cooldwn);
