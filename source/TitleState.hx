@@ -20,7 +20,7 @@ class TitleState extends FlxState
     var press:FlxText;
     //var best:FlxText;
 
-    public static var gameVer:String = "0.1.1 Dev 169 IDK";
+    public static var gameVer:String = "0.1.1 Dev 420 or Bruh";
     var ver:FlxText;
 
     override public function create()
@@ -49,7 +49,7 @@ class TitleState extends FlxState
         title = new FlxText(0, 20);
         title.size = 40;
         title.color = 0xFF000000;
-        title.text = 'Boring adventure';
+        title.text = 'Boring adventure: Bored Heroes Edition';
         title.screenCenter(X);
         add(title);
 
@@ -67,7 +67,7 @@ class TitleState extends FlxState
         //best.screenCenter(X);
         //add(best);
 
-        ver = new FlxText(20, 690);
+        ver = new FlxText(20, Main.gameHeight - 30);
         ver.size = 20;
         ver.color = 0xFF000000;
         ver.text = "Ver " + gameVer;

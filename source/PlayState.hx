@@ -24,11 +24,14 @@ class PlayState extends FlxState
 	var fesh:FlxSprite;             //Pestele
 	var feshsupr:FlxSprite;         //Superul
 	var fs:Int = 0;                 //Procentul superului
-	var f:Bool = true;              //Pentru Super
+	var f:Bool = false;              //Pentru Super
 
 	var fenyx:FlxSprite;            //Grifonul LOL
-	var fenyxType:Int = 2;          
-	//Tipul de grifon: 1-mic si rapid ; 2- normal ; 3-mare si incet
+
+	var fenyxType:Int = 2;          //Tipul de grifon: 1-mic si rapid ; 2- normal ; 3-mare si incet
+	var fenyxPercent:Float = 1.2;
+	var random:Bool = true;
+	var clip:Bool = true;
 
 	var fe:Bool = true;               //Pentru peste
 	var kell:Bool = true;            //Grifonul e mort sau viu?
@@ -38,9 +41,9 @@ class PlayState extends FlxState
 
 	var attack:FlxBar;               //Butonul de atac. Acesta reprezinta si cooldown barul
 	var shoot:Bool = true;
+	var aPhase:Bool = false;
     var Super:FlxSprite;
     var speed:Float;
-	//var lives:FlxText;
 
 	var helthBar:FlxBar;
 	var fenyxBar:FlxBar;
@@ -64,9 +67,13 @@ class PlayState extends FlxState
 	var skysc6:FlxSprite;
 
 	var begen:Bool = true;
+	var fHealth:Float = 0;
 
 	var back:FlxSprite;
     var backText:FlxText;
+
+	var dev:FlxSprite;
+    var devText:FlxText;
 
 	override public function create()
 	{
@@ -77,8 +84,7 @@ class PlayState extends FlxState
 
         cloud = new FlxSprite().loadGraphic(AssetPaths.Cloud__png, false, 200, 125);
 		cloud.y = FlxG.random.int(25, 45);
-		cloud.x = -200;
-		//add(cloud);                                                                        Vreau sa fac pisica sa treaca prin nor, deci am mutat linia de cod
+		cloud.x = -200;            //add(cloud)             Vreau sa fac pisica sa treaca prin nor, deci am mutat linia de cod la linia 178
 
 		skysc = new FlxSprite().loadGraphic(AssetPaths.Skyscrapper__png, false, 154, 409);
 		skysc.y = 720 - 409;
@@ -132,24 +138,18 @@ class PlayState extends FlxState
 						cat.loadGraphic(AssetPaths.CatSheet__png, true, 200, 128);
 						cat.animation.add("Flying", [0, 1], 2, true);
 		                cat.animation.play("Flying");
-					case 2:
-						cat.loadGraphic(AssetPaths.BlackCatSheet__png, true, 200, 128);
-						cat.animation.add("Flying", [0, 1], 2, true);
-		                cat.animation.play("Flying");
-					case 3:
-						cat.loadGraphic(AssetPaths.GoldenCatSheet__png, true, 200, 128);
-						cat.animation.add("Flying", [0, 1], 2, true);
-		                cat.animation.play("Flying");
+					
 					case 4:
 						cat.loadGraphic(AssetPaths.FunnyTikTokperson__png, true, 200, 128);
 				}
+			
 		}
 		cat.x = -200;
 		cat.screenCenter(Y);
 		cat.health = 5;                                                                       //Viata
 		add(cat);
 
-		add(cloud);                                                                           //Arata iesit din peisaj
+		add(cloud);                                                                           //Linia 87                                                             
 
         fenyx = new FlxSprite().loadGraphic(AssetPaths.FenyxSheet__png, true, 200, 123);
 		fenyx.animation.add("Flying", [0, 1], 2,true);
@@ -158,24 +158,49 @@ class PlayState extends FlxState
 		add(fenyx);
 		fenyx.kill();
 
-		fesh = new FlxSprite().loadGraphic(AssetPaths.Fesh__png, false, 120, 68);
-		fesh.x = -500;
-		fesh.y = cat.y;
+		fesh = new FlxSprite();
 		switch (FlxG.save.data.Characters)
 		{
 			case 1:
-				fesh.health = 100;
-			case 2:
-				fesh.health = 100;
-			case 3:
-				fesh.health = 50;
-			case 4:
-				fesh.health = 50;
+				fesh.health = 100;      //cat
+				switch (FlxG.save.data.CharSkin)
+		        {
+                    case 1:
+						fesh.loadGraphic(AssetPaths.Fesh__png, true, 120, 68);
+						fesh.animation.add("Flying", [0, 1], 15,true);
+		                fesh.animation.play("Flying");
+					
+					case 4:
+						fesh.loadGraphic(AssetPaths.Fesh__png, true, 120, 68);
+						fesh.animation.add("Flying", [0, 1], 15,true);
+						fesh.animation.play("Flying");
+				}
+			
 		}
+		fesh.x = -500;
+		fesh.y = cat.y;
+		fHealth = fesh.health;
 		add(fesh);
 		fesh.kill();
 
-		feshsupr = new FlxSprite().loadGraphic(AssetPaths.FeshSchool__png, false, 279, 720);
+		feshsupr = new FlxSprite();//.loadGraphic(AssetPaths.FeshSchool__png, true, 279, 720);
+		switch (FlxG.save.data.Characters)
+		{
+			case 1:
+				switch (FlxG.save.data.CharSkin)
+		        {
+                    case 1:
+						feshsupr.loadGraphic(AssetPaths.FeshSchool__png, true, 279, 720);
+						feshsupr.animation.add("Flying", [0, 1], 15,true);
+		                feshsupr.animation.play("Flying");
+					
+					case 4:
+						feshsupr.loadGraphic(AssetPaths.FeshSchool__png, true, 279, 720);
+						feshsupr.animation.add("Flying", [0, 1], 15,true);
+						feshsupr.animation.play("Flying");
+				}
+			
+		}
 		feshsupr.x = -500;
 		feshsupr.y = 0;
 		add(feshsupr);
@@ -201,13 +226,21 @@ class PlayState extends FlxState
 		Super.animation.add("2", [2], 1, false);
 		Super.animation.add("3", [3], 1, false);
 		Super.animation.add("4", [4], 1, false);
+		Super.animation.add("5", [5], 1, false);
+		Super.animation.add("6", [6], 1, false);
+		Super.animation.add("7", [7], 1, false);
+		Super.animation.add("8", [8], 1, false);
 		Super.x = Main.gameWidth - 340; //940
 		Super.y = Main.gameHeight - 70; //670
 		add(Super);
 
-		Super.health = 0;                                        //Nu e viata, e cooldown
-		speed = 0.9;
-
+		Super.health = 0;
+		switch (FlxG.save.data.Characters)                                        //Nu e viata, e cooldown
+		{
+			case 1:
+				speed = 0.9;
+			
+		}
 		attack = new FlxBar(Main.gameWidth - 250, Main.gameHeight - 240, TOP_TO_BOTTOM, 250, 248, Super, "health", 0, speed).createImageBar(AssetPaths.Shoot__png, AssetPaths.Shoot0Copy__png);//.loadGraphic(AssetPaths.Shoot__png, false, 250, 248);
         attack.x = Main.gameWidth - 250; //1030
 		attack.y = Main.gameHeight - 240; //480
@@ -252,6 +285,14 @@ class PlayState extends FlxState
         backText.text = "<";
         add(backText);
 
+		dev = new FlxSprite(Main.gameWidth - 80, 20).makeGraphic(60, 40, 0xff6689ff);
+        add(dev);
+        devText = new FlxText(Main.gameWidth - 60, 19);
+        devText.size = 35;
+        devText.color = 0xFF000000;
+        devText.text = "D";
+        add(devText);
+
 		new FlxTimer().start(0.005, GameTimer, 0);
 		new FlxTimer().start(0.005, CoolTimer, 0);
 		FlxTween.tween(cat, {x: 5}, 0.25, {ease: FlxEase.quartInOut});
@@ -287,22 +328,50 @@ class PlayState extends FlxState
 		        Super.animation.play("3");
 			case 4:
 		        Super.animation.play("4");
+			case 5:
+				Super.animation.play("5");
+			case 6:
+				Super.animation.play("6");
+			case 7:
+				Super.animation.play("7");
+			case 8:
+				Super.animation.play("8");
 		}
         
 		for (touch in FlxG.touches.list)
 		{
-			if (touch.pressed && !begen) begen = true;
+			if (touch.pressed && !begen)
+			{
+				if (FlxG.save.data.devChange)
+				{
+                clip = !FlxG.save.data.NoClip;
+		        random = FlxG.save.data.randomType;
+			    fHealth = FlxG.save.data.playAtk;
+		        speed = FlxG.save.data.playCool;
+		        fenyxPercent = FlxG.save.data.playEnemy;
+		        fenyxType = FlxG.save.data.playEType;
+				}
+				begen = true;
+				fenyx.animation.play("Flying");
+				if (FlxG.save.data.Characters == 1 && FlxG.save.data.CharSkin !=4)cat.animation.play("Flying");
+			}
 		    if(touch.pressed && begen)                              //Functia si animatia butoanelor de movement
 			{
 				if(touch.overlaps(up))
 				{
-					if (cat.y > 0) cat.y = cat.y - 10;
-					up.animation.play("Pressed");
+					if (cat.x <= 5)
+					{
+					    if (cat.y > 0) cat.y = cat.y - 10;
+					    up.animation.play("Pressed");
+					}
 				}
 				else if(touch.overlaps(down))
 				{
-					if (cat.y < 592) cat.y = cat.y + 10;
-					down.animation.play("Pressed");
+					if (cat.x <= 5)
+					{
+					    if (cat.y < 592) cat.y = cat.y + 10;
+					    down.animation.play("Pressed");
+					}
 				}
 			}
 			else
@@ -314,27 +383,40 @@ class PlayState extends FlxState
             if(touch.overlaps(attack) && touch.justPressed && shoot && !ded && begen)        //Shoot
 		    {
 			    shoot = false;
-			    //attack.alpha = 0.05;
 			    MA();
-				Super.health = speed;
-			    //new FlxTimer().start(Super.health, function(tmr:FlxTimer) 
-			    //{
-				    //shoot = true;
-				    //attack.alpha = 0.7;
-			    //}, 1);
+				switch (FlxG.save.data.Characters)
+				{
+					case 1:
+					    Super.health = speed;
+					
+					
+				}
 		    }
 
-		    if(touch.overlaps(Super) && touch.justPressed && fs == 4 && !ded && begen)       //Super
+		    if(touch.overlaps(Super) && touch.justPressed && fs == 8 && !ded && begen)       //Super
 		    {
-               feshSch();
-			   fs = 0;
+			   feshSch();
+			   if (!FlxG.save.data.playSuper) fs = 0;
 		    }
 			if (touch.overlaps(back) && touch.justReleased && begen)
 			{
-				//FlxG.mouse.visible = true;
 				begen = false;
+				fenyx.animation.stop();
+				if (FlxG.save.data.Characters == 1 && FlxG.save.data.CharSkin !=4)cat.animation.stop();
 				openSubState(new PauseSubState());
-				//FlxG.switchState(new PauseSubState());
+			}
+			if (touch.overlaps(dev) && touch.justReleased && begen)
+			{
+				begen = false;
+				DefaultData.Savestate();
+				FlxG.save.data.NoClip = !clip;
+		        FlxG.save.data.randomType = random;
+				FlxG.save.data.playAtk = fHealth;
+		        FlxG.save.data.playCool = speed;
+		        FlxG.save.data.playEnemy = fenyxPercent;
+		        FlxG.save.data.playEType = fenyxType;
+				FlxG.save.flush();
+				openSubState(new DevSubState());
 			}
 	   }
 
@@ -400,6 +482,7 @@ class PlayState extends FlxState
 					case 3:
 						skysc.loadGraphic(AssetPaths.Skyscrapper3__png, false, 154, 409);
 				}
+				
 			}
 		}
 		else
@@ -422,7 +505,8 @@ class PlayState extends FlxState
 						skysc2.loadGraphic(AssetPaths.Skyscrapper2__png, false, 154, 409);
 					case 3:
 						skysc2.loadGraphic(AssetPaths.Skyscrapper3__png, false, 154, 409);
-				}      
+				}
+				
 			}
 		}
 		else
@@ -445,7 +529,8 @@ class PlayState extends FlxState
 						skysc3.loadGraphic(AssetPaths.Skyscrapper2__png, false, 154, 409);
 					case 3:
 						skysc3.loadGraphic(AssetPaths.Skyscrapper3__png, false, 154, 409);
-				}      
+				}
+				
 			}
 		}
 		else
@@ -469,6 +554,7 @@ class PlayState extends FlxState
 					case 3:
 						skysc4.loadGraphic(AssetPaths.Skyscrapper3__png, false, 154, 409);
 				}
+				
 			}
 		}
 		else
@@ -491,7 +577,8 @@ class PlayState extends FlxState
 						skysc5.loadGraphic(AssetPaths.Skyscrapper2__png, false, 154, 409);
 					case 3:
 						skysc5.loadGraphic(AssetPaths.Skyscrapper3__png, false, 154, 409);
-				}      
+				}
+				
 			}
 		}
 		else
@@ -514,7 +601,8 @@ class PlayState extends FlxState
 						skysc6.loadGraphic(AssetPaths.Skyscrapper2__png, false, 154, 409);
 					case 3:
 						skysc6.loadGraphic(AssetPaths.Skyscrapper3__png, false, 154, 409);
-				}      
+				}
+				
 			}
 		}
 		else
@@ -523,16 +611,38 @@ class PlayState extends FlxState
 		}
 
 
-        if(fesh.isOnScreen() && begen)fesh.x = fesh.x + Main.gameWidth / (speed + (speed / 60)*40) / FlxG.updateFramerate; //Movementul pentru peste
+        if(fesh.isOnScreen() && begen)
+		{
+			                                                                                                   //Movementul pentru peste
+			switch (FlxG.save.data.Characters)
+			{
+				case 1:
+					fesh.x = fesh.x + Main.gameWidth / (speed + (speed / 60)*40) / FlxG.updateFramerate;
+				
+			}
+		}
 		else 
 		{
 			fesh.kill();
+			if (FlxG.save.data.Characters == 2)
+			{
+				Super.health = 0.01;
+				aPhase = false;
+			}
 			fesh.x = 0 - fesh.width - 100;
 			fesh.y = -50;
 			fe = false;
 		}
 
-		if(feshsupr.isOnScreen() && begen)feshsupr.x = feshsupr.x + Main.gameWidth / FlxG.updateFramerate;   //Movementul pentru Super
+		if(feshsupr.isOnScreen() && begen)
+		{
+			switch(FlxG.save.data.Characters)
+			{
+				case 1:
+					feshsupr.x = feshsupr.x + Main.gameWidth / FlxG.updateFramerate;   //Movementul pentru Super
+				
+			}
+		}
 		else 
 		{
 			feshsupr.kill();
@@ -543,13 +653,34 @@ class PlayState extends FlxState
 
 		if(kell && !ded && begen)                                      //Chestii generale pentru inamici
 		{
-            if(FlxG.random.bool(1.2))                            //Apare inamicul
+            if(FlxG.random.bool(fenyxPercent))                            //Apare inamicul
 			{
 				fenyx.revive();
 				fenyx.x = Main.gameWidth - 1;
-				switch (FlxG.random.int(1, 3))
+				if (random) switch (FlxG.random.int(1, 3))
 				{
                     case 1:
+						fenyx.health = 50;
+						fenyxType = 1;
+						fenyx.setGraphicSize(0, 100);
+						fenyx.updateHitbox();
+						fenyx.color = 0xfdeca6;
+					case 2:
+						fenyx.health = 100;
+						fenyxType = 2;
+						fenyx.setGraphicSize(0, 150);
+						fenyx.updateHitbox();
+						fenyx.color = 0xffffffff;
+					case 3:
+						fenyx.health = 150;
+						fenyxType = 3;
+						fenyx.setGraphicSize(0, 200);
+						fenyx.updateHitbox();
+						fenyx.color = 0x757575;
+				}
+				else switch (fenyxType)
+				{
+					case 1:
 						fenyx.health = 50;
 						fenyxType = 1;
 						fenyx.setGraphicSize(0, 100);
@@ -575,15 +706,39 @@ class PlayState extends FlxState
 		}
 		else
 		{
-			if (!ded && begen) fenyx.x = fenyx.x - Main.gameWidth / (1.25 * fenyxType) / FlxG.updateFramerate;     //Movementul pentru inamici. Trebuia sa-l pun ca sa nu mai scada nr de vieti
+			if (!ded && begen)
+			{
+				if (FlxG.save.data.Characters != 5) fenyx.x = fenyx.x - Main.gameWidth / (1.25 * fenyxType) / FlxG.updateFramerate;     //Movementul pentru inamici. Trebuia sa-l pun ca sa nu mai scada nr de vieti
+			    else if (!aPhase) fenyx.x = fenyx.x - Main.gameWidth / (1.25 * fenyxType) / FlxG.updateFramerate;
+			}
 			if(fesh.overlaps(fenyx) && begen && !kell)                 //Pestele a atins inamicul
 			{
-				    var dfenyx:Float = fenyx.health;
-					fenyx.hurt(fesh.health);
-					fesh.hurt(dfenyx);
-					if (fs < 4 && fe) fs++;
+					if (FlxG.save.data.Characters != 2)
+					{
+						var dfenyx:Float = fenyx.health;
+						fenyx.hurt(fesh.health);
+						fesh.hurt(dfenyx);
+					}
+					else if (FlxG.save.data.Characters == 2 && aPhase == false)
+					{
+						aPhase = true;
+                        fenyx.hurt(fesh.health);
+						fe = false;
+					}
+					if (fs < 8) 
+					{
+						if (!FlxG.save.data.playSuper)
+						{
+							switch (FlxG.save.data.Characters)
+							{
+							case 1:
+								fs = fs + 2;
+							
+							}
+						}
+					    else fs = 8;
+					}
 				    p ++;
-					fe = false;
 				    if(fenyx.health <= 0)
 					{
 						kell = true;
@@ -596,16 +751,20 @@ class PlayState extends FlxState
 			            fesh.x = 0 - fesh.width - 100;
 			            fesh.y = -50;
 			            fe = false;
+						if (FlxG.save.data.Characters == 4 && aPhase) FlxTween.tween(cat, {x: 5}, 1, {ease: FlxEase.quartInOut});
 					}
 			}
 			else if (!fesh.overlaps(fenyx) && !feshsupr.overlaps(fenyx) && !ded && !kell && begen && fenyx.overlaps(cat) || !fenyx.isOnScreen())     //Inamicul a atins pisica sau a trecut pe langa pisica
 			{
 				fenyx.kill();
 				kell = true;
-				fenyx.x = Main.gameWidth;
-				cat.color = 0xffd2030b;
-				new FlxTimer().start(0.5, function(tmr:FlxTimer){cat.color = 0xffffffff;}, 1);
-				cat.health --;
+				fenyx.x = Main.gameWidth - 1;
+				if (clip)
+				{
+					cat.color = 0xffd2030b;
+				    new FlxTimer().start(0.5, function(tmr:FlxTimer){cat.color = 0xffffffff;}, 1);
+				    if (clip) cat.health --;
+				}
 			}
 			switch(FlxG.save.data.Characters)
 			{
@@ -619,9 +778,23 @@ class PlayState extends FlxState
 							fenyx.kill();
 							fenyx.x = Main.gameWidth - 1;
 						}
-					    if (fs < 4) fs++;
+					    if (fs < 8) 
+						{
+							if (!FlxG.save.data.playSuper)
+							{
+							    switch (FlxG.save.data.Characters)
+							    {
+								case 1:
+									fs = fs + 2;
+								case 3:
+									fs++;
+							    }
+						    }
+					        else fs = 8;
+						}
 					    p ++;
 					}
+				
 			}
 		}
 
@@ -641,7 +814,7 @@ class PlayState extends FlxState
             died.text = "Ai murit. Atinge ecranul sa te joci din nou";
 			died.screenCenter();
 			fenyx.x = Main.gameWidth - 100;                                                 //Nu mai scade nr de vieti
-			if (p > FlxG.save.data.BestScr)
+			if (p > FlxG.save.data.BestScr && !FlxG.save.data.devChange)
 			{
 				FlxG.save.data.BestScr = p;
 				FlxG.save.flush();
@@ -650,23 +823,50 @@ class PlayState extends FlxState
 		for (touch in FlxG.touches.list)
 		if(touch.justReleased && ded)                                            //Joaca din nou
 		{
+			FlxG.save.data.devChange = false;
+            FlxG.save.data.devChange = false;
+            FlxG.save.data.devChange = null;
+		    FlxG.save.data.NoClip = null;
+	        FlxG.save.data.randomType = null;
+            FlxG.save.data.playSuper = null;
+		    FlxG.save.data.playAtk = null;
+		    FlxG.save.data.playCool = null;
+		    FlxG.save.data.playEnemy = null;
+		    FlxG.save.data.playEType = null;
+            DefaultData.Savestate();
 			FlxG.switchState(new PlayState());
 		}
 	}
 	function MA()                                //Functia pentru butonul de atac
 	{
-		fesh.revive();
-		fesh.health = 100;
-		fesh.y = cat.y + 30;
-		fesh.x = 10;
+		fesh.health = fHealth;
+		if (FlxG.save.data.Characters != 4 || !aPhase)
+		{
+			fesh.revive();
+		    fesh.y = cat.y + 30;
+		    fesh.x = 10;
+		}
+		else if (aPhase)
+		{
+			fesh.kill();
+			fesh.revive();
+			fesh.y = cat.y;
+		    fesh.x = 10;
+		}
+		//if (FlxG.save.data.Characters != 4 && !aPhase)
 		fe = true;
 	}
 	function feshSch()                              //Functia pentru Super
 	{
-		feshsupr.revive();
-		feshsupr.x = 35;
-		feshsupr.y = 0;
-		f = true;
+		switch (FlxG.save.data.Characters)
+	    {
+			case 1:
+				feshsupr.revive();
+		        feshsupr.x = 35;
+		        feshsupr.y = 0;
+				f = true;
+			
+		}
 	}
 	function GameTimer(timer:FlxTimer):Void
 	{
@@ -675,25 +875,20 @@ class PlayState extends FlxState
 			timr = timr + 0.01;
 			var a:Float = (timr / 0.01) % 100;
 			Math.fround(a);
-			if(a/60 >= 1) timr = timr + 0.40;   //Finally, an accurate stopwatch
+			if(a/60 >= 1) timr = timr + 0.40;
 			timr = FlxMath.roundDecimal(timr, 2);
 		}
 	}
 	function CoolTimer(timer:FlxTimer):Void
 	{
-		if (!ded && Super.health > 0.01 && begen)
+		if (!ded && Super.health > 0.01 && begen && FlxG.save.data.Characters != 2)
 		{
-			Super.health = Super.health - 0.01;
-			//var b:Float = (Super.health / 0.01) % 100;
-			//Math.fround(b);
-			//if(b == 0) Super.health = Super.health - 0.40;          
+			Super.health = Super.health - 0.01;          
 			Super.health = FlxMath.roundDecimal(Super.health, 2);
-			//trace(Super.health);
 		}
 		if (Super.health <= 0.01 && begen)
 		{
 			shoot = true;
-			//attack.alpha = 0.7;
 			Super.health = 0;
 		}
 	}
